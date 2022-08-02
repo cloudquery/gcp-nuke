@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"fmt"
+	"google.golang.org/api/compute/v1"
 	"log"
 	"sync"
 	"time"
@@ -10,7 +11,6 @@ import (
 	"github.com/arehmandev/gcp-nuke/helpers"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/syncmap"
-	"google.golang.org/api/compute/v1"
 )
 
 // ComputeSubnetworks -
@@ -64,6 +64,10 @@ func (c *ComputeSubnetworks) List(refreshCache bool) []string {
 		}
 
 		for _, subnetwork := range subnetworkList.Items {
+			if subnetwork.Name == "default" {
+				// ignore default subnetwork
+				continue
+			}
 			c.resourceMap.Store(subnetwork.Name, region)
 		}
 	}
