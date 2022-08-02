@@ -63,6 +63,10 @@ func (c *ComputeNetworks) List(refreshCache bool) []string {
 	}
 
 	for _, network := range networkList.Items {
+		if network.Name == "default" {
+			// ignore default network
+			continue
+		}
 		c.resourceMap.Store(network.Name, nil)
 	}
 	return c.ToSlice()
