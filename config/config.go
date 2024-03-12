@@ -11,7 +11,7 @@ type Config struct {
 	Zones                    []string
 	Regions                  []string
 	Timeout                  int
-	PollTime                 int
+	Interval                 int
 	DryRun                   bool
 	SkipGKEAutopilotClusters bool
 }

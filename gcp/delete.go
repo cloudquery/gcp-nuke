@@ -52,7 +52,7 @@ func parallelResourceDeletion(resourceMap map[string]Resource, resource Resource
 	}
 
 	timeOut := config.Timeout
-	pollTime := config.PollTime
+	pollTime := config.Interval
 	seconds := 0
 
 	// Wait for dependencies to delete

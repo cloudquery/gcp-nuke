@@ -103,8 +103,8 @@ func (c *ComputeRouters) Remove() error {
 				}
 				opStatus = checkOpp.Status
 
-				time.Sleep(time.Duration(c.base.config.PollTime) * time.Second)
-				seconds += c.base.config.PollTime
+				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)
+				seconds += c.base.config.Interval
 				if seconds > c.base.config.Timeout {
 					return fmt.Errorf("[Error] Resource deletion timed out for %v [type: %v project: %v] (%v seconds)", routerID, c.Name(), c.base.config.Project, c.base.config.Timeout)
 				}
