@@ -2,10 +2,11 @@ package gcp
 
 import (
 	"fmt"
-	"google.golang.org/api/compute/v1"
 	"log"
 	"sync"
 	"time"
+
+	"google.golang.org/api/compute/v1"
 
 	"github.com/arehmandev/gcp-nuke/config"
 	"github.com/arehmandev/gcp-nuke/helpers"
@@ -39,13 +40,11 @@ func (c *ComputeSubnetworks) Name() string {
 // ToSlice - Name of the resourceLister for ComputeSubnetworks
 func (c *ComputeSubnetworks) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeSubnetworks) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeSubnetworks
@@ -84,9 +83,8 @@ func (c *ComputeSubnetworks) Dependencies() []string {
 
 // Remove -
 func (c *ComputeSubnetworks) Remove() error {
-
 	// Removal logic
-	errs, _ := errgroup.WithContext(c.base.config.Context)
+	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		subnetworkID := key.(string)
@@ -111,8 +109,8 @@ func (c *ComputeSubnetworks) Remove() error {
 				}
 				opStatus = checkOpp.Status
 
-				time.Sleep(time.Duration(c.base.config.PollTime) * time.Second)
-				seconds += c.base.config.PollTime
+				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)
+				seconds += c.base.config.Interval
 				if seconds > c.base.config.Timeout {
 					return fmt.Errorf("[Error] Resource deletion timed out for %v [type: %v project: %v] (%v seconds)", subnetworkID, c.Name(), c.base.config.Project, c.base.config.Timeout)
 				}

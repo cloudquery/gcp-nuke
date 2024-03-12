@@ -41,13 +41,11 @@ func (c *ContainerGKEClusters) Name() string {
 // ToSlice - Name of the resourceLister for ContainerGKEClusters
 func (c *ContainerGKEClusters) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ContainerGKEClusters) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ContainerGKEClusters
@@ -65,6 +63,13 @@ func (c *ContainerGKEClusters) List(refreshCache bool) []string {
 	}
 
 	for _, instance := range instanceList.Clusters {
+		if instance.Autopilot != nil {
+			if instance.Autopilot.Enabled && c.base.config.SkipGKEAutopilotClusters {
+				log.Println("[Warning] [SkipGKEAutopilotClusters] Autopilot Cluster found. Skipping...")
+				continue
+			}
+		}
+
 		c.appendInstanceGroups(instance.Name, instance.Location)
 		instanceResource := DefaultResourceProperties{}
 		clusterLink := extractGKESelfLink(instance.SelfLink)
@@ -81,9 +86,8 @@ func (c *ContainerGKEClusters) Dependencies() []string {
 
 // Remove -
 func (c *ContainerGKEClusters) Remove() error {
-
 	// Removal logic
-	errs, _ := errgroup.WithContext(c.base.config.Context)
+	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		instanceID := key.(string)
@@ -106,8 +110,8 @@ func (c *ContainerGKEClusters) Remove() error {
 				}
 				opStatus = checkOpp.Status
 
-				time.Sleep(time.Duration(c.base.config.PollTime) * time.Second)
-				seconds += c.base.config.PollTime
+				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)
+				seconds += c.base.config.Interval
 				if seconds > c.base.config.Timeout {
 					return fmt.Errorf("[Error] Resource deletion timed out for %v [type: %v project: %v] (%v seconds):\n %v", instanceID, c.Name(), c.base.config.Project, c.base.config.Timeout, err.Error())
 				}

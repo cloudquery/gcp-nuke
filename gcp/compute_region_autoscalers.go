@@ -39,13 +39,11 @@ func (c *ComputeRegionAutoScalers) Name() string {
 // ToSlice - Name of the resourceLister for ComputeRegionAutoScalers
 func (c *ComputeRegionAutoScalers) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeRegionAutoScalers) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeRegionAutoScalers
@@ -80,9 +78,8 @@ func (c *ComputeRegionAutoScalers) Dependencies() []string {
 
 // Remove -
 func (c *ComputeRegionAutoScalers) Remove() error {
-
 	// Removal logic
-	errs, _ := errgroup.WithContext(c.base.config.Context)
+	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		instanceID := key.(string)
@@ -106,8 +103,8 @@ func (c *ComputeRegionAutoScalers) Remove() error {
 				}
 				opStatus = checkOpp.Status
 
-				time.Sleep(time.Duration(c.base.config.PollTime) * time.Second)
-				seconds += c.base.config.PollTime
+				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)
+				seconds += c.base.config.Interval
 				if seconds > c.base.config.Timeout {
 					return fmt.Errorf("[Error] Resource deletion timed out for %v [type: %v project: %v region: %v] (%v seconds)", instanceID, c.Name(), c.base.config.Project, region, c.base.config.Timeout)
 				}

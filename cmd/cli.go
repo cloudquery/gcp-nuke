@@ -11,7 +11,6 @@ import (
 
 // Command -
 func Command() {
-
 	app := &cli.App{
 		Usage:     "The GCP project cleanup tool with added radiation",
 		Version:   "v0.1.0",
@@ -32,24 +31,29 @@ func Command() {
 				Usage: "Timeout for removal of a single resource in seconds",
 			},
 			&cli.IntFlag{
-				Name:  "polltime, p",
+				Name:  "interval, i",
 				Value: 10,
-				Usage: "Time for polling resource deletion status in seconds",
+				Usage: "Interval in seconds for polling resource deletion status",
+			},
+			&cli.BoolFlag{
+				Name:  "skip-gke-autopilot-clusters, s",
+				Usage: "Skip GKE Autopilot clusters",
+				Value: false,
 			},
 		},
 		Action: func(c *cli.Context) error {
-
 			// Behaviour to delete all resource in parallel in one project at a time - will be made into loop / concurrenct project nuke if required
 			config := config.Config{
-				Project:  c.String("project"),
-				DryRun:   c.Bool("dryrun"),
-				Timeout:  c.Int("timeout"),
-				PollTime: c.Int("polltime"),
-				Context:  gcp.Ctx,
-				Zones:    gcp.GetZones(gcp.Ctx, c.String("project")),
-				Regions:  gcp.GetRegions(gcp.Ctx, c.String("project")),
+				Project:                  c.String("project"),
+				DryRun:                   c.Bool("dryrun"),
+				Timeout:                  c.Int("timeout"),
+				Interval:                 c.Int("interval"),
+				Ctx:                      gcp.Ctx,
+				Zones:                    gcp.GetZones(gcp.Ctx, c.String("project")),
+				Regions:                  gcp.GetRegions(gcp.Ctx, c.String("project")),
+				SkipGKEAutopilotClusters: c.Bool("skip-gke-autopilot-clusters"),
 			}
-			log.Printf("[Info] Timeout %v seconds. Polltime %v seconds. Dry run: %v", config.Timeout, config.PollTime, config.DryRun)
+			log.Printf("[Info] Timeout %v seconds. Polltime %v seconds. Dry run: %v", config.Timeout, config.Interval, config.DryRun)
 			gcp.RemoveProject(config)
 
 			return nil

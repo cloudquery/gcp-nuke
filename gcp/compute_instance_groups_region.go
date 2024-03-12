@@ -39,13 +39,11 @@ func (c *ComputeInstanceGroupsRegion) Name() string {
 // ToSlice - Name of the resourceLister for ComputeInstanceGroupsRegion
 func (c *ComputeInstanceGroupsRegion) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeInstanceGroupsRegion) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeInstanceGroupsRegion
@@ -81,9 +79,8 @@ func (c *ComputeInstanceGroupsRegion) Dependencies() []string {
 
 // Remove -
 func (c *ComputeInstanceGroupsRegion) Remove() error {
-
 	// Removal logic
-	errs, _ := errgroup.WithContext(c.base.config.Context)
+	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		instanceID := key.(string)
@@ -107,8 +104,8 @@ func (c *ComputeInstanceGroupsRegion) Remove() error {
 				}
 				opStatus = checkOpp.Status
 
-				time.Sleep(time.Duration(c.base.config.PollTime) * time.Second)
-				seconds += c.base.config.PollTime
+				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)
+				seconds += c.base.config.Interval
 				if seconds > c.base.config.Timeout {
 					return fmt.Errorf("[Error] Resource deletion timed out for %v [type: %v project: %v region: %v] (%v seconds)", instanceID, c.Name(), c.base.config.Project, region, c.base.config.Timeout)
 				}
