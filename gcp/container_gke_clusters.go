@@ -41,13 +41,11 @@ func (c *ContainerGKEClusters) Name() string {
 // ToSlice - Name of the resourceLister for ContainerGKEClusters
 func (c *ContainerGKEClusters) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ContainerGKEClusters) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ContainerGKEClusters
@@ -86,7 +84,6 @@ func (c *ContainerGKEClusters) Dependencies() []string {
 
 // Remove -
 func (c *ContainerGKEClusters) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 

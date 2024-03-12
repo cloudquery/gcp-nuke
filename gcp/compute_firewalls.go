@@ -39,13 +39,11 @@ func (c *ComputeFirewalls) Name() string {
 // ToSlice - Name of the resourceLister for ComputeFirewalls
 func (c *ComputeFirewalls) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeFirewalls) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeFirewalls
@@ -78,7 +76,6 @@ func (c *ComputeFirewalls) Dependencies() []string {
 
 // Remove -
 func (c *ComputeFirewalls) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 

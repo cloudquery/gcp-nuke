@@ -39,13 +39,11 @@ func (c *ComputeRouters) Name() string {
 // ToSlice - Name of the resourceLister for ComputeRouters
 func (c *ComputeRouters) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeRouters) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeRouters
@@ -79,7 +77,6 @@ func (c *ComputeRouters) Dependencies() []string {
 
 // Remove -
 func (c *ComputeRouters) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 

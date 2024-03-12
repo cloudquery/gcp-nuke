@@ -39,13 +39,11 @@ func (c *ComputeVPNTunnels) Name() string {
 // ToSlice - Name of the resourceLister for ComputeVPNTunnels
 func (c *ComputeVPNTunnels) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeVPNTunnels) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeVPNTunnels
@@ -77,7 +75,6 @@ func (c *ComputeVPNTunnels) Dependencies() []string {
 
 // Remove -
 func (c *ComputeVPNTunnels) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 

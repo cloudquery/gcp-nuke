@@ -39,13 +39,11 @@ func (c *ComputeDisks) Name() string {
 // ToSlice - Name of the resourceLister for ComputeDisks
 func (c *ComputeDisks) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeDisks) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeDisks
@@ -84,7 +82,6 @@ func (c *ComputeDisks) Dependencies() []string {
 
 // Remove -
 func (c *ComputeDisks) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 

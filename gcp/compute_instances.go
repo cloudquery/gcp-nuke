@@ -40,13 +40,11 @@ func (c *ComputeInstances) Name() string {
 // ToSlice - Name of the resourceLister for ComputeInstances
 func (c *ComputeInstances) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeInstances) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeInstances
@@ -92,7 +90,6 @@ func (c *ComputeInstances) Dependencies() []string {
 
 // Remove -
 func (c *ComputeInstances) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 

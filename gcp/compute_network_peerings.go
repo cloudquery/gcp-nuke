@@ -39,13 +39,11 @@ func (c *ComputeNetworkPeerings) Name() string {
 // ToSlice - Name of the resourceLister for ComputeNetworkPeerings
 func (c *ComputeNetworkPeerings) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeNetworkPeerings) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeNetworkPeerings
@@ -80,7 +78,6 @@ func (c *ComputeNetworkPeerings) Dependencies() []string {
 
 // Remove -
 func (c *ComputeNetworkPeerings) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 
@@ -90,7 +87,6 @@ func (c *ComputeNetworkPeerings) Remove() error {
 
 		// Parallel network deletion
 		errs.Go(func() error {
-
 			deleteCall := c.serviceClient.Networks.RemovePeering(c.base.config.Project, networkID, &compute.NetworksRemovePeeringRequest{
 				Name: networkPeeringID,
 			})

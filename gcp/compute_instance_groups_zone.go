@@ -42,7 +42,6 @@ func (c *ComputeInstanceGroupsZone) Name() string {
 // ToSlice - Name of the resourceLister for ComputeInstanceGroupsZone
 func (c *ComputeInstanceGroupsZone) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
@@ -96,7 +95,6 @@ func (c *ComputeInstanceGroupsZone) Dependencies() []string {
 
 // Remove -
 func (c *ComputeInstanceGroupsZone) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 

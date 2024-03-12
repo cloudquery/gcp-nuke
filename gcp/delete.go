@@ -29,7 +29,6 @@ func RemoveProject(config config.Config) {
 				return nil
 			}
 			err := parallelResourceDeletion(resourceMap, resource, config)
-
 			if err != nil {
 				return err
 			}

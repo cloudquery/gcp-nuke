@@ -39,13 +39,11 @@ func (c *ComputeInstanceGroupsRegion) Name() string {
 // ToSlice - Name of the resourceLister for ComputeInstanceGroupsRegion
 func (c *ComputeInstanceGroupsRegion) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeInstanceGroupsRegion) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeInstanceGroupsRegion
@@ -81,7 +79,6 @@ func (c *ComputeInstanceGroupsRegion) Dependencies() []string {
 
 // Remove -
 func (c *ComputeInstanceGroupsRegion) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 

@@ -39,13 +39,11 @@ func (c *ComputeNetworks) Name() string {
 // ToSlice - Name of the resourceLister for ComputeNetworks
 func (c *ComputeNetworks) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeNetworks) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeNetworks
@@ -80,7 +78,6 @@ func (c *ComputeNetworks) Dependencies() []string {
 
 // Remove -
 func (c *ComputeNetworks) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 

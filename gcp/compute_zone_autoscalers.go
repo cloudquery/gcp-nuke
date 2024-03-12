@@ -39,13 +39,11 @@ func (c *ComputeZoneAutoScalers) Name() string {
 // ToSlice - Name of the resourceLister for ComputeZoneAutoScalers
 func (c *ComputeZoneAutoScalers) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
-
 }
 
 // Setup - populates the struct
 func (c *ComputeZoneAutoScalers) Setup(config config.Config) {
 	c.base.config = config
-
 }
 
 // List - Returns a list of all ComputeZoneAutoScalers
@@ -80,7 +78,6 @@ func (c *ComputeZoneAutoScalers) Dependencies() []string {
 
 // Remove -
 func (c *ComputeZoneAutoScalers) Remove() error {
-
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 

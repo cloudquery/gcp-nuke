@@ -11,7 +11,6 @@ import (
 
 // Command -
 func Command() {
-
 	app := &cli.App{
 		Usage:     "The GCP project cleanup tool with added radiation",
 		Version:   "v0.1.0",
@@ -43,7 +42,6 @@ func Command() {
 			},
 		},
 		Action: func(c *cli.Context) error {
-
 			// Behaviour to delete all resource in parallel in one project at a time - will be made into loop / concurrenct project nuke if required
 			config := config.Config{
 				Project:                  c.String("project"),
