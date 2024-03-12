@@ -86,7 +86,7 @@ func (c *ComputeDisks) Dependencies() []string {
 func (c *ComputeDisks) Remove() error {
 
 	// Removal logic
-	errs, _ := errgroup.WithContext(c.base.config.Context)
+	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		instanceID := key.(string)

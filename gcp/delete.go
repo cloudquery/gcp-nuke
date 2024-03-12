@@ -17,7 +17,7 @@ func RemoveProject(config config.Config) {
 	resourceMap := GetResourceMap(config)
 
 	// Parallel deletion
-	errs, _ := errgroup.WithContext(config.Context)
+	errs, _ := errgroup.WithContext(config.Ctx)
 
 	for _, resource := range resourceMap {
 		resource := resource

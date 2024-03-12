@@ -80,7 +80,7 @@ func (c *ComputeVPNGateways) Dependencies() []string {
 func (c *ComputeVPNGateways) Remove() error {
 
 	// Removal logic
-	errs, _ := errgroup.WithContext(c.base.config.Context)
+	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		gatewayID := key.(string)
