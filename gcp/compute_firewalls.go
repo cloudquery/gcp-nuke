@@ -16,8 +16,8 @@ import (
 // ComputeFirewalls -
 type ComputeFirewalls struct {
 	serviceClient *compute.Service
-	base          ResourceBase
 	resourceMap   syncmap.Map
+	base          ResourceBase
 }
 
 func init() {

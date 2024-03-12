@@ -16,8 +16,8 @@ import (
 // ComputeZoneAutoScalers -
 type ComputeZoneAutoScalers struct {
 	serviceClient *compute.Service
-	base          ResourceBase
 	resourceMap   syncmap.Map
+	base          ResourceBase
 }
 
 func init() {

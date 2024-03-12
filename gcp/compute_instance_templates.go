@@ -16,8 +16,8 @@ import (
 // ComputeInstanceTemplates -
 type ComputeInstanceTemplates struct {
 	serviceClient *compute.Service
-	base          ResourceBase
 	resourceMap   syncmap.Map
+	base          ResourceBase
 }
 
 func init() {

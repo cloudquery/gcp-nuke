@@ -19,8 +19,8 @@ type ComputeInstanceGroupsZone struct {
 	serviceClient *compute.Service
 	// Required to skip gke nodepools
 	gkeInstanceGroups []string
-	base              ResourceBase
 	resourceMap       syncmap.Map
+	base              ResourceBase
 }
 
 func init() {

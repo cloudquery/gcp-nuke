@@ -17,9 +17,9 @@ import (
 // ContainerGKEClusters -
 type ContainerGKEClusters struct {
 	serviceClient  *container.Service
-	base           ResourceBase
 	resourceMap    syncmap.Map
 	InstanceGroups []string
+	base           ResourceBase
 }
 
 func init() {
