@@ -1,6 +1,9 @@
 on:
   release:
     types: [created]
+  push:
+    branches:
+      - go-release
 
 permissions:
   contents: write
