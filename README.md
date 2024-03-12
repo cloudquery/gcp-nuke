@@ -35,12 +35,13 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --project value   GCP project id to nuke (required)
-   --dryrun          Perform a dryrun instead (default: false)
-   --timeout value   Timeout for removal of a single resource in seconds (default: 400)
-   --polltime value  Time for polling resource deletion status in seconds (default: 10)
-   --help, -h        show help (default: false)
-   --version, -v     print the version (default: false)
+   --project value               GCP project id to nuke (required)
+   --dryrun                      Perform a dryrun instead (default: false)
+   --timeout value               Timeout for removal of a single resource in seconds (default: 400)
+   --polltime value              Time for polling resource deletion status in seconds (default: 10)
+   --skip-gke-autopilot-clusters Skip processing of GKE Autopilot clusters if found. gcp-nuke will error if any exist. (default: false)
+   --help, -h                    show help (default: false)
+   --version, -v                 print the version (default: false)
 ```
 
 Example dryrun
