@@ -65,6 +65,11 @@ func (c *ContainerGKEClusters) List(refreshCache bool) []string {
 	}
 
 	for _, instance := range instanceList.Clusters {
+		if instance.Autopilot.Enabled && c.base.config.SkipGKEAutopilotClusters {
+			log.Println("[Warning] [SkipGKEAutopilotClusters] Autopilot Cluster found. Skipping...")
+			continue
+		}
+
 		c.appendInstanceGroups(instance.Name, instance.Location)
 		instanceResource := DefaultResourceProperties{}
 		clusterLink := extractGKESelfLink(instance.SelfLink)

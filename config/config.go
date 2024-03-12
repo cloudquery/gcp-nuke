@@ -13,4 +13,5 @@ type Config struct {
 	Timeout                  int
 	PollTime                 int
 	DryRun                   bool
+	SkipGKEAutopilotClusters bool
 }
