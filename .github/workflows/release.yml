@@ -34,8 +34,6 @@ jobs:
       matrix:
         goosarch:
           - "linux/amd64"
-<<<<<<< Updated upstream
-=======
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,4 +64,3 @@ jobs:
           files: ${{env.BINARY_NAME}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
->>>>>>> Stashed changes
