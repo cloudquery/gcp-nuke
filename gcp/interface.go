@@ -17,9 +17,8 @@ type ResourceBase struct {
 
 // DefaultResourceProperties -
 type DefaultResourceProperties struct {
-	project string
-	zone    string
-	region  string
+	zone   string
+	region string
 }
 
 // Resource -
@@ -33,8 +32,10 @@ type Resource interface {
 }
 
 // Ctx = context
-var Ctx = context.Background()
-var resourceMap = make(map[string]Resource)
+var (
+	Ctx         = context.Background()
+	resourceMap = make(map[string]Resource)
+)
 
 func register(resource Resource) {
 	_, exists := resourceMap[resource.Name()]
