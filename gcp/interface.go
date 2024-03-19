@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/arehmandev/gcp-nuke/config"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/compute/v1"
 )
 
@@ -17,9 +16,8 @@ type ResourceBase struct {
 
 // DefaultResourceProperties -
 type DefaultResourceProperties struct {
-	project string
-	zone    string
-	region  string
+	zone   string
+	region string
 }
 
 // Resource -
@@ -33,14 +31,17 @@ type Resource interface {
 }
 
 // Ctx = context
-var Ctx = context.Background()
-var resourceMap = make(map[string]Resource)
+var (
+	Ctx         = context.Background()
+	resourceMap = make(map[string]Resource)
+)
 
 func register(resource Resource) {
 	_, exists := resourceMap[resource.Name()]
 	if exists {
 		log.Fatalf("a resource with the name %s already exists", resource.Name())
 	}
+
 	resourceMap[resource.Name()] = resource
 }
 
@@ -54,68 +55,76 @@ func GetResourceMap(config config.Config) map[string]Resource {
 }
 
 // GetZones -
-func GetZones(defaultContext context.Context, project string) []string {
+func GetZones(ctx context.Context, project string) []string {
 	log.Println("[Info] Retrieving zones for project:", project)
-	client, err := google.DefaultClient(defaultContext, compute.ComputeScope)
+
+	serviceClient, err := compute.NewService(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	serviceClient, err := compute.New(client)
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	zoneListCall := serviceClient.Zones.List(project)
+
 	zoneList, err := zoneListCall.Do()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	zoneStringSlice := []string{}
+
 	for _, zone := range zoneList.Items {
 		zoneNameSplit := strings.Split(zone.Name, "/")
 		zoneStringSlice = append(zoneStringSlice, zoneNameSplit[len(zoneNameSplit)-1])
 	}
+
 	return zoneStringSlice
 }
 
 // GetRegions -
-func GetRegions(defaultContext context.Context, project string) []string {
+func GetRegions(ctx context.Context, project string) []string {
 	log.Println("[Info] Retrieving regions for project:", project)
-	client, err := google.DefaultClient(defaultContext, compute.ComputeScope)
+
+	serviceClient, err := compute.NewService(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	serviceClient, err := compute.New(client)
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	regionListCall := serviceClient.Regions.List(project)
+
 	regionList, err := regionListCall.Do()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	regionStringSlice := []string{}
+
 	for _, region := range regionList.Items {
 		regionNameSplit := strings.Split(region.Name, "/")
 		regionStringSlice = append(regionStringSlice, regionNameSplit[len(regionNameSplit)-1])
 	}
+
 	return regionStringSlice
 }
 
 func extractGKESelfLink(input string) string {
-	var selfLinkSlice []string
-	var startAppend bool
+	var (
+		selfLinkSlice []string
+		startAppend   bool
+	)
+
 	for _, word := range strings.Split(input, "/") {
 		if word == "projects" {
 			startAppend = true
 		}
+
 		if word == "zones" {
 			word = "locations"
 		}
+
 		if startAppend {
 			selfLinkSlice = append(selfLinkSlice, word)
 		}
 	}
+
 	return strings.Join(selfLinkSlice, "/")
 }
