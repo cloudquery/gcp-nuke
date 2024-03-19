@@ -31,14 +31,14 @@ func MapKeys(input map[string]interface{}) []string {
 
 // SortedSyncMapKeys -
 func SortedSyncMapKeys(parMap *syncmap.Map) (output []string) {
-
 	parMap.Range(func(key, value interface{}) bool {
 		strkey := fmt.Sprintf("%v", key)
 		output = append(output, strkey)
 		return true
 	})
 
-	sort.Sort(sort.StringSlice(output))
+	sort.Strings(output)
+
 	return output
 }
 
