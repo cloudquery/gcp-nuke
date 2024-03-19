@@ -25,9 +25,11 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	computeResource := ComputeFirewalls{
 		serviceClient: computeService,
 	}
+
 	register(&computeResource)
 }
 
@@ -55,6 +57,7 @@ func (c *ComputeFirewalls) List(refreshCache bool) []string {
 	c.resourceMap = sync.Map{}
 
 	firewallListCall := c.serviceClient.Firewalls.List(c.base.config.Project)
+
 	firewallList, err := firewallListCall.Do()
 	if err != nil {
 		log.Fatal(err)
@@ -63,6 +66,7 @@ func (c *ComputeFirewalls) List(refreshCache bool) []string {
 	for _, firewall := range firewallList.Items {
 		c.resourceMap.Store(firewall.Name, nil)
 	}
+
 	return c.ToSlice()
 }
 
@@ -71,6 +75,7 @@ func (c *ComputeFirewalls) Dependencies() []string {
 	a := ComputeInstanceGroupsRegion{}
 	b := ComputeInstanceGroupsZone{}
 	cl := ContainerGKEClusters{}
+
 	return []string{a.Name(), b.Name(), cl.Name()}
 }
 
@@ -85,35 +90,63 @@ func (c *ComputeFirewalls) Remove() error {
 		// Parallel firewall deletion
 		errs.Go(func() error {
 			deleteCall := c.serviceClient.Firewalls.Delete(c.base.config.Project, firewallID)
+
 			operation, err := deleteCall.Do()
 			if err != nil {
 				return err
 			}
-			var opStatus string
+
+			opStatus := ""
 			seconds := 0
+
 			for opStatus != "DONE" {
-				log.Printf("[Info] Resource currently being deleted %v [type: %v project: %v] (%v seconds)", firewallID, c.Name(), c.base.config.Project, seconds)
+				log.Printf(
+					"[Info] Resource currently being deleted %v [type: %v project: %v] (%v seconds)",
+					firewallID,
+					c.Name(),
+					c.base.config.Project,
+					seconds,
+				)
 
 				operationCall := c.serviceClient.GlobalOperations.Get(c.base.config.Project, operation.Name)
+
 				checkOpp, err := operationCall.Do()
 				if err != nil {
 					return err
 				}
+
 				opStatus = checkOpp.Status
 
 				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)
 				seconds += c.base.config.Interval
+
 				if seconds > c.base.config.Timeout {
-					return fmt.Errorf("[Error] Resource deletion timed out for %v [type: %v project: %v] (%v seconds)", firewallID, c.Name(), c.base.config.Project, c.base.config.Timeout)
+					return fmt.Errorf(
+						"[Error] Resource deletion timed out for %v [type: %v project: %v] (%v seconds)",
+						firewallID,
+						c.Name(),
+						c.base.config.Project,
+						c.base.config.Timeout,
+					)
 				}
 			}
+
 			c.resourceMap.Delete(firewallID)
 
-			log.Printf("[Info] Resource deleted %v [type: %v project: %v] (%v seconds)", firewallID, c.Name(), c.base.config.Project, seconds)
+			log.Printf(
+				"[Info] Resource deleted %v [type: %v project: %v] (%v seconds)",
+				firewallID,
+				c.Name(),
+				c.base.config.Project,
+				seconds,
+			)
+
 			return nil
 		})
+
 		return true
 	})
+
 	// Wait for all deletions to complete, and return the first non nil error
 	err := errs.Wait()
 	return err

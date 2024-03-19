@@ -53,15 +53,16 @@ func Command() {
 				Regions:                  gcp.GetRegions(gcp.Ctx, c.String("project")),
 				SkipGKEAutopilotClusters: c.Bool("skip-gke-autopilot-clusters"),
 			}
+
 			log.Printf("[Info] Timeout %v seconds. Polltime %v seconds. Dry run: %v", config.Timeout, config.Interval, config.DryRun)
+
 			gcp.RemoveProject(config)
 
 			return nil
 		},
 	}
 
-	err := app.Run(os.Args)
-	if err != nil {
+	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
 }
