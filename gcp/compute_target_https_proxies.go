@@ -86,7 +86,7 @@ func (c *ComputeTargetHTTPSProxies) Remove() error {
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		resourceID := key.(string)
 
-		// Parallel targethttpsproxies deletion
+		// Parallel target https proxy deletion
 		errs.Go(func() error {
 			deleteCall := c.serviceClient.TargetHttpsProxies.Delete(c.base.config.Project, resourceID)
 

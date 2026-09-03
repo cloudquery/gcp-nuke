@@ -94,7 +94,7 @@ func (c *ComputeAddresses) Remove() error {
 		resourceID := key.(string)
 		region := value.(string)
 
-		// Parallel addresses deletion
+		// Parallel address deletion
 		errs.Go(func() error {
 			deleteCall := c.serviceClient.Addresses.Delete(c.base.config.Project, region, resourceID)
 

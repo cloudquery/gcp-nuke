@@ -85,7 +85,7 @@ func (c *ComputeSSLCertificates) Remove() error {
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		resourceID := key.(string)
 
-		// Parallel sslcertificates deletion
+		// Parallel ssl certificate deletion
 		errs.Go(func() error {
 			deleteCall := c.serviceClient.SslCertificates.Delete(c.base.config.Project, resourceID)
 

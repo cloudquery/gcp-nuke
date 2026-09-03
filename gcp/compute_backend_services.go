@@ -85,7 +85,7 @@ func (c *ComputeBackendServices) Remove() error {
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		resourceID := key.(string)
 
-		// Parallel backendservices deletion
+		// Parallel backend service deletion
 		errs.Go(func() error {
 			deleteCall := c.serviceClient.BackendServices.Delete(c.base.config.Project, resourceID)
 

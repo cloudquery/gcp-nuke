@@ -86,7 +86,7 @@ func (c *ComputeURLMaps) Remove() error {
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		resourceID := key.(string)
 
-		// Parallel urlmaps deletion
+		// Parallel url map deletion
 		errs.Go(func() error {
 			deleteCall := c.serviceClient.UrlMaps.Delete(c.base.config.Project, resourceID)
 

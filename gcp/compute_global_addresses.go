@@ -90,7 +90,7 @@ func (c *ComputeGlobalAddresses) Remove() error {
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		resourceID := key.(string)
 
-		// Parallel globaladdresses deletion
+		// Parallel global address deletion
 		errs.Go(func() error {
 			deleteCall := c.serviceClient.GlobalAddresses.Delete(c.base.config.Project, resourceID)
 

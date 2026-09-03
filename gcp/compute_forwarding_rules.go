@@ -74,7 +74,9 @@ func (c *ComputeForwardingRules) List(refreshCache bool) []string {
 
 // Dependencies - Returns a List of resource names to check for
 func (c *ComputeForwardingRules) Dependencies() []string {
-	return []string{}
+	a := ContainerGKEClusters{}
+
+	return []string{a.Name()}
 }
 
 // Remove -
@@ -86,7 +88,7 @@ func (c *ComputeForwardingRules) Remove() error {
 		resourceID := key.(string)
 		region := value.(string)
 
-		// Parallel forwardingrules deletion
+		// Parallel forwarding rule deletion
 		errs.Go(func() error {
 			deleteCall := c.serviceClient.ForwardingRules.Delete(c.base.config.Project, region, resourceID)
 

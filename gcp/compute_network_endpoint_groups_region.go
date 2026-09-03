@@ -88,7 +88,7 @@ func (c *ComputeRegionNetworkEndpointGroups) Remove() error {
 		resourceID := key.(string)
 		region := value.(string)
 
-		// Parallel regionnetworkendpointgroups deletion
+		// Parallel network endpoint group deletion
 		errs.Go(func() error {
 			deleteCall := c.serviceClient.RegionNetworkEndpointGroups.Delete(c.base.config.Project, region, resourceID)
 
