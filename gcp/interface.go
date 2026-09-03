@@ -2,11 +2,14 @@ package gcp
 
 import (
 	"context"
+	"errors"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/arehmandev/gcp-nuke/config"
 	"google.golang.org/api/compute/v1"
+	"google.golang.org/api/googleapi"
 )
 
 // ResourceBase -
@@ -127,4 +130,22 @@ func extractGKESelfLink(input string) string {
 	}
 
 	return strings.Join(selfLinkSlice, "/")
+}
+
+// isAPIUnavailable - whether the error means the service is not usable on this
+// project at all, rather than a listing failure the caller should know about
+func isAPIUnavailable(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	var apiErr *googleapi.Error
+	if errors.As(err, &apiErr) {
+		if apiErr.Code == http.StatusForbidden || apiErr.Code == http.StatusNotFound {
+			return true
+		}
+	}
+
+	return strings.Contains(err.Error(), "has not been used in project") ||
+		strings.Contains(err.Error(), "SERVICE_DISABLED")
 }
