@@ -57,11 +57,11 @@ func parallelResourceDeletion(resourceMap map[string]Resource, resource Resource
 
 	// Wait for dependencies to delete
 	for _, dependencyResourceName := range resource.Dependencies() {
-		if seconds > timeOut {
-			return fmt.Errorf("[Error] Resource %v timed out whilst waiting for dependency %v to delete. (%v seconds)", resource.Name(), dependencyResourceName, timeOut)
-		}
 		dependencyResource := resourceMap[dependencyResourceName]
 		for len(dependencyResource.List(false)) != 0 {
+			if seconds > timeOut {
+				return fmt.Errorf("[Error] Resource %v timed out whilst waiting for dependency %v to delete. (%v seconds)", resource.Name(), dependencyResourceName, timeOut)
+			}
 			refreshCache = true
 			time.Sleep(time.Duration(pollTime) * time.Second)
 			seconds += pollTime
