@@ -121,6 +121,10 @@ func (c *NetworkServicesHTTPRoutes) Remove() error {
 					return err
 				}
 
+				if err := networkServicesOperationError(checkOpp); err != nil {
+					return err
+				}
+
 				done = checkOpp.Done
 
 				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)

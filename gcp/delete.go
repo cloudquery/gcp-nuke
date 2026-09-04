@@ -107,7 +107,9 @@ func apiErrorCheck(err error) bool {
 	}
 	errorDescriptors := []string{
 		"resourceInUseByAnotherResource",
+		"RESOURCE_IN_USE_BY_ANOTHER_RESOURCE",
 		"resourceNotReady",
+		"RESOURCE_NOT_READY",
 		// Interestingly in the case of instancegroups managed by GKE, listing them after deletion can often give back a ghost list
 		"googleapi: Error 404",
 	}

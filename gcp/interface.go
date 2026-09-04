@@ -3,13 +3,18 @@ package gcp
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/arehmandev/gcp-nuke/config"
 	"google.golang.org/api/compute/v1"
+	"google.golang.org/api/container/v1"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/networkmanagement/v1"
+	"google.golang.org/api/networkservices/v1"
+	"google.golang.org/api/privateca/v1"
 )
 
 // ResourceBase -
@@ -148,4 +153,60 @@ func isAPIUnavailable(err error) bool {
 
 	return strings.Contains(err.Error(), "has not been used in project") ||
 		strings.Contains(err.Error(), "SERVICE_DISABLED")
+}
+
+// computeOperationError - a compute operation reports DONE whether it succeeded
+// or failed, so the error has to be read rather than inferred from the status
+func computeOperationError(operation *compute.Operation) error {
+	if operation == nil || operation.Error == nil || len(operation.Error.Errors) == 0 {
+		return nil
+	}
+
+	first := operation.Error.Errors[0]
+
+	return fmt.Errorf("%v: %v", first.Code, first.Message)
+}
+
+// privateCAOperationError - as computeOperationError, for private ca
+func privateCAOperationError(operation *privateca.Operation) error {
+	if operation == nil || operation.Error == nil {
+		return nil
+	}
+
+	return fmt.Errorf("%v: %v", operation.Error.Code, operation.Error.Message)
+}
+
+// networkServicesOperationError - as computeOperationError, for network services
+func networkServicesOperationError(operation *networkservices.Operation) error {
+	if operation == nil || operation.Error == nil {
+		return nil
+	}
+
+	return fmt.Errorf("%v: %v", operation.Error.Code, operation.Error.Message)
+}
+
+// networkManagementOperationError - as computeOperationError, for network management
+func networkManagementOperationError(operation *networkmanagement.Operation) error {
+	if operation == nil || operation.Error == nil {
+		return nil
+	}
+
+	return fmt.Errorf("%v: %v", operation.Error.Code, operation.Error.Message)
+}
+
+// containerOperationError - as computeOperationError, for kubernetes engine
+func containerOperationError(operation *container.Operation) error {
+	if operation == nil {
+		return nil
+	}
+
+	if operation.Error != nil {
+		return fmt.Errorf("%v: %v", operation.Error.Code, operation.Error.Message)
+	}
+
+	if operation.StatusMessage != "" {
+		return fmt.Errorf("%v", operation.StatusMessage)
+	}
+
+	return nil
 }

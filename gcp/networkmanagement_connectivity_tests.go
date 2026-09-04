@@ -125,6 +125,10 @@ func (c *NetworkManagementConnectivityTests) Remove() error {
 					return err
 				}
 
+				if err := networkManagementOperationError(checkOpp); err != nil {
+					return err
+				}
+
 				done = checkOpp.Done
 
 				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)

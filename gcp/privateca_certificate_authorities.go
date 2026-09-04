@@ -180,6 +180,10 @@ func (c *PrivateCACertificateAuthorities) waitForOperation(operation *privateca.
 			return err
 		}
 
+		if err := privateCAOperationError(checkOpp); err != nil {
+			return err
+		}
+
 		done = checkOpp.Done
 
 		time.Sleep(time.Duration(c.base.config.Interval) * time.Second)
