@@ -15,6 +15,7 @@ import (
 	"google.golang.org/api/networkmanagement/v1"
 	"google.golang.org/api/networkservices/v1"
 	"google.golang.org/api/privateca/v1"
+	"google.golang.org/api/vpcaccess/v1"
 )
 
 // ResourceBase -
@@ -257,4 +258,13 @@ func reservedBackendServiceGroups(serviceClient *compute.Service, config config.
 	}
 
 	return held, nil
+}
+
+// vpcAccessOperationError - as computeOperationError, for serverless vpc access
+func vpcAccessOperationError(operation *vpcaccess.Operation) error {
+	if operation == nil || operation.Error == nil {
+		return nil
+	}
+
+	return fmt.Errorf("%v: %v", operation.Error.Code, operation.Error.Message)
 }

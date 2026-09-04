@@ -74,7 +74,8 @@ func (c *ComputeNetworks) List(refreshCache bool) []string {
 func (c *ComputeNetworks) Dependencies() []string {
 	a := ComputeSubnetworks{}
 	b := ComputeFirewalls{}
-	return []string{a.Name(), b.Name()}
+	cl := VPCAccessConnectors{}
+	return []string{a.Name(), b.Name(), cl.Name()}
 }
 
 // Remove -

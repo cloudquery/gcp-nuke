@@ -78,7 +78,8 @@ func (c *ComputeSubnetworks) Dependencies() []string {
 	a := ComputeInstanceGroupsRegion{}
 	b := ComputeInstanceGroupsZone{}
 	cl := ContainerGKEClusters{}
-	return []string{a.Name(), b.Name(), cl.Name()}
+	d := VPCAccessConnectors{}
+	return []string{a.Name(), b.Name(), cl.Name(), d.Name()}
 }
 
 // Remove -
