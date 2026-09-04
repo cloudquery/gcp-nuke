@@ -108,6 +108,10 @@ func (c *ContainerGKEClusters) Remove() error {
 				if err != nil {
 					return err
 				}
+				if err := containerOperationError(checkOpp); err != nil {
+					return err
+				}
+
 				opStatus = checkOpp.Status
 
 				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)

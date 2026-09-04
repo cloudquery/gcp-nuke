@@ -116,6 +116,10 @@ func (c *ComputeBackendServices) Remove() error {
 					return err
 				}
 
+				if err := computeOperationError(checkOpp); err != nil {
+					return err
+				}
+
 				opStatus = checkOpp.Status
 
 				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)
