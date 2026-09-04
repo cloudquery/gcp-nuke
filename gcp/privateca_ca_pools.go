@@ -67,6 +67,19 @@ func (c *PrivateCACAPools) List(refreshCache bool) []string {
 	}
 
 	for _, pool := range pools {
+		// deleting an authority keeps it recoverable for its grace period, and
+		// GCP refuses to delete a pool that still holds one. Listing the pool
+		// would fail the sweep every run until the window elapses
+		recovering, err := poolHoldsRecoveringCA(c.serviceClient, c.base.config, pool)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if recovering {
+			log.Printf("[Info] Skipping %v - holds an authority still in its recovery period", pool)
+			continue
+		}
+
 		c.resourceMap.Store(pool, nil)
 	}
 
@@ -178,4 +191,27 @@ func listCAPools(serviceClient *privateca.Service, config config.Config) ([]stri
 	}
 
 	return pools, nil
+}
+
+// poolHoldsRecoveringCA - whether a pool still holds a deleted authority inside
+// its recovery period, which blocks deletion of the pool itself
+func poolHoldsRecoveringCA(serviceClient *privateca.Service, config config.Config, pool string) (bool, error) {
+	listCall := serviceClient.Projects.Locations.CaPools.CertificateAuthorities.List(pool)
+
+	recovering := false
+
+	err := listCall.Pages(config.Ctx, func(page *privateca.ListCertificateAuthoritiesResponse) error {
+		for _, ca := range page.CertificateAuthorities {
+			if ca.State == "DELETED" {
+				recovering = true
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		return false, err
+	}
+
+	return recovering, nil
 }
