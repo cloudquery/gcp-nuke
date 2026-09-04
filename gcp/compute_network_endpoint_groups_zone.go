@@ -57,6 +57,11 @@ func (c *ComputeZoneNetworkEndpointGroups) List(refreshCache bool) []string {
 	// Refresh resource map
 	c.resourceMap = sync.Map{}
 
+	held, err := reservedBackendServiceGroups(c.serviceClient, c.base.config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	for _, zone := range c.base.config.Zones {
 		listCall := c.serviceClient.NetworkEndpointGroups.List(c.base.config.Project, zone)
 
@@ -66,6 +71,10 @@ func (c *ComputeZoneNetworkEndpointGroups) List(refreshCache bool) []string {
 		}
 
 		for _, resource := range resourceList.Items {
+			if isGoogleReservedName(resource.Name) || held[resource.Name] {
+				continue
+			}
+
 			// the same name exists in every zone GKE uses, so key on both
 			c.resourceMap.Store(fmt.Sprintf("%v/%v", zone, resource.Name), zone)
 		}

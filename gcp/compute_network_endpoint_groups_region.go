@@ -56,6 +56,11 @@ func (c *ComputeRegionNetworkEndpointGroups) List(refreshCache bool) []string {
 	// Refresh resource map
 	c.resourceMap = sync.Map{}
 
+	held, err := reservedBackendServiceGroups(c.serviceClient, c.base.config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	for _, region := range c.base.config.Regions {
 		listCall := c.serviceClient.RegionNetworkEndpointGroups.List(c.base.config.Project, region)
 
@@ -65,6 +70,10 @@ func (c *ComputeRegionNetworkEndpointGroups) List(refreshCache bool) []string {
 		}
 
 		for _, resource := range resourceList.Items {
+			if isGoogleReservedName(resource.Name) || held[resource.Name] {
+				continue
+			}
+
 			c.resourceMap.Store(resource.Name, region)
 		}
 	}

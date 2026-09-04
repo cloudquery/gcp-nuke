@@ -62,6 +62,10 @@ func (c *NetworkServicesTCPRoutes) List(refreshCache bool) []string {
 
 	err := listCall.Pages(c.base.config.Ctx, func(page *networkservices.ListTcpRoutesResponse) error {
 		for _, resource := range page.TcpRoutes {
+			if isGoogleReservedName(resource.Name) {
+				continue
+			}
+
 			c.resourceMap.Store(resource.Name, nil)
 		}
 

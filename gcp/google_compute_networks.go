@@ -73,7 +73,8 @@ func (c *ComputeNetworks) List(refreshCache bool) []string {
 // Dependencies - Returns a List of resource names to check for
 func (c *ComputeNetworks) Dependencies() []string {
 	a := ComputeSubnetworks{}
-	return []string{a.Name()}
+	b := ComputeFirewalls{}
+	return []string{a.Name(), b.Name()}
 }
 
 // Remove -

@@ -62,6 +62,10 @@ func (c *NetworkServicesMeshes) List(refreshCache bool) []string {
 
 	err := listCall.Pages(c.base.config.Ctx, func(page *networkservices.ListMeshesResponse) error {
 		for _, resource := range page.Meshes {
+			if isGoogleReservedName(resource.Name) {
+				continue
+			}
+
 			c.resourceMap.Store(resource.Name, nil)
 		}
 
