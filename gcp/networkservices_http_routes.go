@@ -10,97 +10,102 @@ import (
 	"github.com/arehmandev/gcp-nuke/helpers"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/syncmap"
-	"google.golang.org/api/compute/v1"
+	"google.golang.org/api/networkservices/v1"
 )
 
-// ComputeBackendServices -
-type ComputeBackendServices struct {
-	serviceClient *compute.Service
+// NetworkServicesHTTPRoutes - service mesh routes hold a reference on the backend services they target
+type NetworkServicesHTTPRoutes struct {
+	serviceClient *networkservices.Service
 	resourceMap   syncmap.Map
 	base          ResourceBase
 }
 
 func init() {
-	computeService, err := compute.NewService(Ctx)
+	networkServicesService, err := networkservices.NewService(Ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	computeResource := ComputeBackendServices{
-		serviceClient: computeService,
+	networkServicesResource := NetworkServicesHTTPRoutes{
+		serviceClient: networkServicesService,
 	}
 
-	register(&computeResource)
+	register(&networkServicesResource)
 }
 
-// Name - Name of the resourceLister for ComputeBackendServices
-func (c *ComputeBackendServices) Name() string {
-	return "ComputeBackendServices"
+// Name - Name of the resourceLister for NetworkServicesHTTPRoutes
+func (c *NetworkServicesHTTPRoutes) Name() string {
+	return "NetworkServicesHTTPRoutes"
 }
 
-// ToSlice - Name of the resourceLister for ComputeBackendServices
-func (c *ComputeBackendServices) ToSlice() (slice []string) {
+// ToSlice - Name of the resourceLister for NetworkServicesHTTPRoutes
+func (c *NetworkServicesHTTPRoutes) ToSlice() (slice []string) {
 	return helpers.SortedSyncMapKeys(&c.resourceMap)
 }
 
 // Setup - populates the struct
-func (c *ComputeBackendServices) Setup(config config.Config) {
+func (c *NetworkServicesHTTPRoutes) Setup(config config.Config) {
 	c.base.config = config
 }
 
-// List - Returns a list of all ComputeBackendServices
-func (c *ComputeBackendServices) List(refreshCache bool) []string {
+// List - Returns a list of all NetworkServicesHTTPRoutes
+func (c *NetworkServicesHTTPRoutes) List(refreshCache bool) []string {
 	if !refreshCache {
 		return c.ToSlice()
 	}
 	// Refresh resource map
 	c.resourceMap = sync.Map{}
 
-	listCall := c.serviceClient.BackendServices.List(c.base.config.Project)
+	parent := fmt.Sprintf("projects/%v/locations/global", c.base.config.Project)
 
-	resourceList, err := listCall.Do()
+	listCall := c.serviceClient.Projects.Locations.HttpRoutes.List(parent)
+
+	err := listCall.Pages(c.base.config.Ctx, func(page *networkservices.ListHttpRoutesResponse) error {
+		for _, resource := range page.HttpRoutes {
+			c.resourceMap.Store(resource.Name, nil)
+		}
+
+		return nil
+	})
 	if err != nil {
-		log.Fatal(err)
-	}
+		// the API is not enabled on every project - do not abort the sweep
+		if isAPIUnavailable(err) {
+			log.Printf("[Info] Skipping %v - API unavailable on project %v", c.Name(), c.base.config.Project)
+			return c.ToSlice()
+		}
 
-	for _, resource := range resourceList.Items {
-		c.resourceMap.Store(resource.Name, nil)
+		log.Fatal(err)
 	}
 
 	return c.ToSlice()
 }
 
 // Dependencies - Returns a List of resource names to check for
-func (c *ComputeBackendServices) Dependencies() []string {
-	a := ComputeURLMaps{}
-	b := NetworkServicesHTTPRoutes{}
-	cl := NetworkServicesTCPRoutes{}
-	d := NetworkServicesGRPCRoutes{}
-
-	return []string{a.Name(), b.Name(), cl.Name(), d.Name()}
+func (c *NetworkServicesHTTPRoutes) Dependencies() []string {
+	return []string{}
 }
 
 // Remove -
-func (c *ComputeBackendServices) Remove() error {
+func (c *NetworkServicesHTTPRoutes) Remove() error {
 	// Removal logic
 	errs, _ := errgroup.WithContext(c.base.config.Ctx)
 
 	c.resourceMap.Range(func(key, value interface{}) bool {
 		resourceID := key.(string)
 
-		// Parallel backend service deletion
+		// Parallel http route deletion
 		errs.Go(func() error {
-			deleteCall := c.serviceClient.BackendServices.Delete(c.base.config.Project, resourceID)
+			deleteCall := c.serviceClient.Projects.Locations.HttpRoutes.Delete(resourceID)
 
 			operation, err := deleteCall.Do()
 			if err != nil {
 				return err
 			}
 
-			opStatus := ""
+			done := operation.Done
 			seconds := 0
 
-			for opStatus != "DONE" {
+			for !done {
 				log.Printf(
 					"[Info] Resource currently being deleted %v [type: %v project: %v] (%v seconds)",
 					resourceID,
@@ -109,14 +114,14 @@ func (c *ComputeBackendServices) Remove() error {
 					seconds,
 				)
 
-				operationCall := c.serviceClient.GlobalOperations.Get(c.base.config.Project, operation.Name)
+				operationCall := c.serviceClient.Projects.Locations.Operations.Get(operation.Name)
 
 				checkOpp, err := operationCall.Do()
 				if err != nil {
 					return err
 				}
 
-				opStatus = checkOpp.Status
+				done = checkOpp.Done
 
 				time.Sleep(time.Duration(c.base.config.Interval) * time.Second)
 				seconds += c.base.config.Interval
