@@ -64,6 +64,10 @@ func (c *ComputeGlobalNetworkEndpointGroups) List(refreshCache bool) []string {
 	}
 
 	for _, resource := range resourceList.Items {
+		if isGoogleReservedName(resource.Name) {
+			continue
+		}
+
 		c.resourceMap.Store(resource.Name, nil)
 	}
 

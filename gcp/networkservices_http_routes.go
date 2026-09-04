@@ -62,6 +62,10 @@ func (c *NetworkServicesHTTPRoutes) List(refreshCache bool) []string {
 
 	err := listCall.Pages(c.base.config.Ctx, func(page *networkservices.ListHttpRoutesResponse) error {
 		for _, resource := range page.HttpRoutes {
+			if isGoogleReservedName(resource.Name) {
+				continue
+			}
+
 			c.resourceMap.Store(resource.Name, nil)
 		}
 

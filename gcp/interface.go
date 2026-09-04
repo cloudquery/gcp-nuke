@@ -210,3 +210,51 @@ func containerOperationError(operation *container.Operation) error {
 
 	return nil
 }
+
+// googleReservedPrefixes - names Google manages on our behalf. Cloud Service
+// Mesh generates gsmrsvd- resources and then refuses every caller permission to
+// touch them, so listing them only guarantees the sweep fails
+var googleReservedPrefixes = []string{"gsmrsvd-"}
+
+// isGoogleReservedName - whether a resource is Google managed and undeletable
+func isGoogleReservedName(name string) bool {
+	nameSplit := strings.Split(name, "/")
+	basename := nameSplit[len(nameSplit)-1]
+
+	for _, prefix := range googleReservedPrefixes {
+		if strings.HasPrefix(basename, prefix) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// reservedBackendServiceGroups - endpoint group names held by a backend service
+// that cannot be deleted. The group cannot be deleted while the reference lives,
+// so sweeping it would fail for as long as the backend service exists
+func reservedBackendServiceGroups(serviceClient *compute.Service, config config.Config) (map[string]bool, error) {
+	held := map[string]bool{}
+
+	listCall := serviceClient.BackendServices.List(config.Project)
+
+	err := listCall.Pages(config.Ctx, func(page *compute.BackendServiceList) error {
+		for _, backendService := range page.Items {
+			if !isGoogleReservedName(backendService.Name) {
+				continue
+			}
+
+			for _, backend := range backendService.Backends {
+				groupSplit := strings.Split(backend.Group, "/")
+				held[groupSplit[len(groupSplit)-1]] = true
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return held, nil
+}
